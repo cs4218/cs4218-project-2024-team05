@@ -1,125 +1,136 @@
-import React from 'react';
-import { render, waitFor, fireEvent, screen } from '@testing-library/react';
-import axios from 'axios';
-import '@testing-library/jest-dom/extend-expect';
+import React from "react";
+import { render, screen, waitFor } from "@testing-library/react";
 import AdminOrders from './AdminOrders';
-import { useAuth } from '../../context/auth';
-import { BrowserRouter } from 'react-router-dom';
-import moment from 'moment';
-import { useCart } from '../../context/cart';
-import { useSearch } from '../../context/search';
-import { Select } from 'antd';
+import axios from "axios";
+import { useAuth } from "../../context/auth";
+import "@testing-library/jest-dom";
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
-jest.mock('axios');
-jest.mock('../../context/auth');
-jest.mock('../../context/cart');
-jest.mock('../../context/search');
+jest.mock("axios");
 
-// Mock the Select component from Ant Design
-jest.mock('antd', () => ({
-  ...jest.requireActual('antd'),
-  Select: ({ children, onChange, defaultValue }) => (
-    <select defaultValue={defaultValue} onChange={e => onChange(e.target.value)}>
-      {children}
-    </select>
-  ),
-  Option: ({ children, value }) => (
-    <option value={value}>{children}</option>
-  ),
+jest.mock("../../context/auth", () => ({
+    useAuth: jest.fn(() => [null, jest.fn()]),
 }));
 
-describe('AdminOrders Component', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    useAuth.mockReturnValue([{ token: 'mock-token', user: { name: 'Admin' } }, jest.fn()]);
-    useCart.mockReturnValue([[], jest.fn()]);
-    useSearch.mockReturnValue([{ keyword: '' }, jest.fn()]);
-});
+jest.mock("../../components/Layout", () => ({ children }) => (
+    <div>{children}</div>
+));
+jest.mock("../../components/UserMenu", () => () => <div>User Menu</div>);
 
-//   it('renders the AdminOrders page and fetches orders', async () => {
-//     // Mock the orders data
-//     const mockOrders = [
-//       {
-//         _id: 'order1',
-//         status: 'Processing',
-//         buyer: { name: 'John Doe' },
-//         createAt: moment().subtract(1, 'day').toISOString(),
-//         payment: { success: true },
-//         products: [
-//           { _id: 'product1', name: 'Product 1', description: 'Description of product 1', price: 100 },
-//         ],
-//       },
-//     ];
-//     axios.get.mockResolvedValueOnce({ data: mockOrders });
+describe("AdminOrders Component", () => {
+    it("should render the orders from the API", async () => {
+        const mockAuth = {
+            token: "fake-token",
+            user: { name: "Test User" },
+        };
+        useAuth.mockReturnValue([mockAuth]);
 
-//     const { getByText, getAllByText } = render(
-//       <BrowserRouter>
-//         <AdminOrders />
-//       </BrowserRouter>
-//     );
+        const mockOrders = [
+            {
+                _id: "Order 1",
+                status: "Delivered",
+                buyer: { name: "John Doe" },
+                createAt: "2024-09-09T12:00:00Z",
+                payment: { success: true },
+                products: [
+                    {
+                        _id: "1",
+                        name: "Product 1",
+                        description: "Description of Product 1",
+                        price: 10,
+                    },
+                ],
+            },
+        ];
 
-//     // Verify page title and content
-//     expect(getByText('All Orders')).toBeInTheDocument();
+        axios.get.mockResolvedValue({ data: mockOrders });
 
-//     // Wait for the orders to be fetched and rendered
-//     await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/api/v1/auth/all-orders'));
+        render(
+            <MemoryRouter initialEntries={['/admin/orders']}>
+                <Routes>
+                    <Route path="/admin/orders" element={<AdminOrders />} />
+                </Routes>
+            </MemoryRouter>
+        );
 
-//     // Check if order data is rendered
-//     expect(getByText('John Doe')).toBeInTheDocument();
-//     expect(getByText('Processing')).toBeInTheDocument();
-//     expect(getByText('Success')).toBeInTheDocument();
-//     expect(getByText('1')).toBeInTheDocument(); // Quantity of products
-//     expect(getByText('Product 1')).toBeInTheDocument();
-//     expect(getByText('Price : 100')).toBeInTheDocument();
-//   });
+        await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/api/v1/auth/all-orders'));
 
-//   it('should update the order status when status is changed', async () => {
-//     const mockOrders = [
-//       {
-//         _id: 'order1',
-//         status: 'Processing',
-//         buyer: { name: 'John Doe' },
-//         createAt: moment().subtract(1, 'day').toISOString(),
-//         payment: { success: true },
-//         products: [
-//           { _id: 'product1', name: 'Product 1', description: 'Description of product 1', price: 100 },
-//         ],
-//       },
-//     ];
+        expect(await screen.findByText("All Orders")).toBeInTheDocument();
+        expect(await screen.findByText("Delivered")).toBeInTheDocument();
+        expect(await screen.findByText("John Doe")).toBeInTheDocument();
+        expect(await screen.findByText("Success")).toBeInTheDocument();
+        expect(await screen.findByText("Product 1")).toBeInTheDocument();
+        expect(await screen.findByText("Price : 10")).toBeInTheDocument();
+    });
 
-//     axios.get.mockResolvedValueOnce({ data: mockOrders });
-//     axios.put.mockResolvedValueOnce({});
+    it('should update the order status when status is changed', async () => {
+        const mockAuth = {
+            token: "fake-token",
+            user: { name: "Test User" },
+        };
+        useAuth.mockReturnValue([mockAuth]);
+    
+        const mockOrders = [
+            {
+                _id: "Order1",
+                status: "Processing",
+                buyer: { name: "John Doe" },
+                createAt: "2024-09-09T12:00:00Z",
+                payment: { success: true },
+                products: [
+                    {
+                        _id: "1",
+                        name: "Product 1",
+                        description: "Description of Product 1",
+                        price: 10,
+                    },
+                ],
+            },
+        ];
+    
+        axios.get.mockResolvedValue({ data: mockOrders });
+    
+        render(
+            <MemoryRouter initialEntries={['/admin/orders']}>
+                <Routes>
+                    <Route path="/admin/orders" element={<AdminOrders />} />
+                </Routes>
+            </MemoryRouter>
+        );
+    
+        expect(await screen.findByText("Processing")).toBeInTheDocument();
 
-//     const { getByText, getByDisplayValue } = render(
-//       <BrowserRouter>
-//         <AdminOrders />
-//       </BrowserRouter>
-//     );
+        // test select and change status
+        const select = await screen.findByRole('combobox');
+        expect(select).toBeInTheDocument();
+    
+        userEvent.click(select);
 
-//     await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/api/v1/auth/all-orders'));
+        await waitFor(() => screen.getByText('Shipped'));
+    
+        fireEvent.click(screen.getByText('Shipped'));
 
-//     // Check if the initial status is "Processing"
-//     const select = getByDisplayValue('Processing');
-//     expect(select).toBeInTheDocument();
+        expect(await screen.findByText("Shipped")).toBeInTheDocument();
+    
+        await waitFor(() => expect(axios.put).toHaveBeenCalledWith('/api/v1/auth/order-status/Order1', { status: 'Shipped' }));
+    });
 
-//     // Change the status to "Shipped"
-//     fireEvent.change(select, { target: { value: 'Shipped' } });
+    
+    it('should display an error message when fetching orders fails', async () => {
+        axios.get.mockRejectedValueOnce(new Error('Failed to fetch orders'));
 
-//     await waitFor(() => expect(axios.put).toHaveBeenCalledWith('/api/v1/auth/order-status/order1', { status: 'Shipped' }));
-//   });
+        const { getByText } = render(
+            <MemoryRouter initialEntries={['/admin/orders']}>
+                <Routes>
+                    <Route path="/admin/orders" element={<AdminOrders />} />
+                </Routes>
+            </MemoryRouter>
+        );
 
-  it('should display an error message when fetching orders fails', async () => {
-    axios.get.mockRejectedValueOnce(new Error('Failed to fetch orders'));
+        await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/api/v1/auth/all-orders'));
 
-    const { getByText } = render(
-      <BrowserRouter>
-        <AdminOrders />
-      </BrowserRouter>
-    );
-
-    await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/api/v1/auth/all-orders'));
-
-    // In this case, no orders would be displayed, but the app should still render correctly
-    expect(getByText('All Orders')).toBeInTheDocument();
-  });
+        expect(getByText('All Orders')).toBeInTheDocument();
+    });
 });
