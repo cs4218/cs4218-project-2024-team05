@@ -1,20 +1,22 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import axios from 'axios';
 import '@testing-library/jest-dom/extend-expect'; // For matchers like toBeInTheDocument
 import toast from 'react-hot-toast';
 import CreateProduct from './CreateProduct';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { useAuth } from '../../context/auth';
-import { useCart } from '../../context/cart';
-import { useSearch } from '../../context/search';
+import userEvent from '@testing-library/user-event';
 
 // Mock axios for API calls
 jest.mock('axios');
+jest.mock("../../components/Layout", () => ({ children }) => (
+    <div>{children}</div>
+));
+jest.mock("../../context/auth", () => ({
+    useAuth: jest.fn(() => [null, jest.fn()]),
+}));
 jest.mock('react-hot-toast');
-jest.mock('../../context/auth');
-jest.mock('../../context/cart');
-jest.mock('../../context/search');
 
 describe('CreateProduct Component', () => {
     beforeEach(() => {
@@ -24,89 +26,114 @@ describe('CreateProduct Component', () => {
             user: { name: 'Admin User', email: 'admin@example.com' },
         }, jest.fn()]);
 
-        useCart.mockReturnValue([[], jest.fn()]);
-        useSearch.mockReturnValue([{ keyword: '' }, jest.fn()]);
-
-    });
-  it('renders the CreateProduct form', () => {
-    const { getByText, getByPlaceholderText } = render(
-        <MemoryRouter initialEntries={['/create-product']}>
-            <Routes>
-                <Route path="/create-product" element={<CreateProduct />} />
-            </Routes>
-        </MemoryRouter>);
-
-    // Ensure that the form fields are rendered
-    expect(getByPlaceholderText('write a name')).toBeInTheDocument();
-    expect(getByPlaceholderText('write a description')).toBeInTheDocument();
-    expect(getByPlaceholderText('write a Price')).toBeInTheDocument();
-    expect(getByText('CREATE PRODUCT')).toBeInTheDocument();
-  });
-
-  it('should submit form data and display success message on product creation', async () => {
-    // Mock the successful axios post response
-    axios.post.mockResolvedValueOnce({
-      data: { success: true, message: 'Product Created Successfully' },
+        axios.get.mockResolvedValueOnce({
+            data: {
+                success: true,
+                category: [{ _id: '1', name: 'Category 1' }, { _id: '2', name: 'Category 2' }],
+            },
+        });
     });
 
-    const { getByText, getByPlaceholderText } = render(
-        <MemoryRouter initialEntries={['/create-product']}>
-            <Routes>
-                <Route path="/create-product" element={<CreateProduct />} />
-            </Routes>
-        </MemoryRouter>);
+    it('renders the CreateProduct form', async () => {
+        const { getByText, getByPlaceholderText, getByRole } = render(
+            <MemoryRouter initialEntries={['/create-product']}>
+                <Routes>
+                    <Route path="/create-product" element={<CreateProduct />} />
+                </Routes>
+            </MemoryRouter>
+        );
 
-    // Fill in form inputs
-    fireEvent.change(getByPlaceholderText('write a name'), {
-      target: { value: 'Test Product' },
-    });
-    fireEvent.change(getByPlaceholderText('write a description'), {
-      target: { value: 'This is a test product' },
-    });
-    fireEvent.change(getByPlaceholderText('write a Price'), {
-      target: { value: '100' },
-    });
-    fireEvent.change(getByPlaceholderText('write a quantity'), {
-      target: { value: '10' },
-    });
+        await waitFor(() => expect(axios.get).toHaveBeenCalledWith('/api/v1/category/get-category'))
 
-    // Simulate clicking the create button
-    fireEvent.click(getByText('CREATE PRODUCT'));
+        const categorySelect = await screen.findByTestId('category-select');
+        expect(categorySelect).toBeInTheDocument();
+        expect(getByText('Upload Photo')).toBeInTheDocument();
 
-    // Wait for the axios call and check if the success toast is called
-    await waitFor(() => expect(axios.post).toHaveBeenCalled());
-    expect(toast.success).toHaveBeenCalledWith('Product Created Successfully');
-  });
+        expect(getByPlaceholderText('write a name')).toBeInTheDocument();
+        expect(getByPlaceholderText('write a description')).toBeInTheDocument();
+        expect(getByPlaceholderText('write a Price')).toBeInTheDocument();
 
-  it('should display error message on failed product creation', async () => {
-    // Mock the axios post to return an error
-    axios.post.mockRejectedValueOnce({
-      response: { data: { message: 'Error creating product' } },
+        const shippingSelect = await screen.findByTestId('shipping-select');
+        expect(shippingSelect).toBeInTheDocument();
+
+        expect(getByText('CREATE PRODUCT')).toBeInTheDocument();
+
     });
 
-    const { getByText, getByPlaceholderText } = render(
-        <MemoryRouter initialEntries={['/create-product']}>
-            <Routes>
-                <Route path="/create-product" element={<CreateProduct />} />
-            </Routes>
-        </MemoryRouter>);
+    it('should submit form data and display success message on product creation', async () => {
+        axios.post.mockResolvedValueOnce({
+            data: { success: true, message: 'Product Created Successfully' },
+        });
 
-    // Fill in the form
-    fireEvent.change(getByPlaceholderText('write a name'), {
-      target: { value: 'Test Product' },
-    });
-    fireEvent.change(getByPlaceholderText('write a description'), {
-      target: { value: 'This is a test product' },
-    });
-    fireEvent.change(getByPlaceholderText('write a Price'), {
-      target: { value: '100' },
+        const { getByText, getByPlaceholderText } = render(
+            <MemoryRouter initialEntries={['/create-product']}>
+                <Routes>
+                    <Route path="/create-product" element={<CreateProduct />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        // Fill in form inputs
+        fireEvent.change(getByPlaceholderText('write a name'), {
+            target: { value: 'Test Product' },
+        });
+        fireEvent.change(getByPlaceholderText('write a description'), {
+            target: { value: 'This is a test product' },
+        });
+        fireEvent.change(getByPlaceholderText('write a Price'), {
+            target: { value: '100' },
+        });
+        fireEvent.change(getByPlaceholderText('write a quantity'), {
+            target: { value: '10' },
+        });
+
+        fireEvent.click(getByText('CREATE PRODUCT'));
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith(
+                '/api/v1/product/create-product',
+                expect.any(FormData)
+            );
+            expect(toast.success).toHaveBeenCalledWith('Product Created Successfully');
+        });
     });
 
-    // Click the create button
-    fireEvent.click(getByText('CREATE PRODUCT'));
+    it('should display error message on failed product creation', async () => {
+        axios.post.mockImplementation(() => {
+            throw new Error();
+          });
 
-    // Wait for the axios call and check if the error toast is called
-    await waitFor(() => expect(axios.post).toHaveBeenCalled());
-    expect(toast.error).toHaveBeenCalledWith('something went wrong');
-  });
+        const { getByText, getByPlaceholderText } = render(
+            <MemoryRouter initialEntries={['/create-product']}>
+                <Routes>
+                    <Route path="/create-product" element={<CreateProduct />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        fireEvent.change(getByPlaceholderText('write a name'), {
+            target: { value: 'Test Product' },
+        });
+        fireEvent.change(getByPlaceholderText('write a description'), {
+            target: { value: 'This is a test product' },
+        });
+        fireEvent.change(getByPlaceholderText('write a Price'), {
+            target: { value: '100' },
+        });
+        fireEvent.change(getByPlaceholderText('write a quantity'), {
+            target: { value: '10' },
+        });
+
+        fireEvent.click(getByText('CREATE PRODUCT'));
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith(
+                '/api/v1/product/create-product',
+                expect.any(FormData)
+            );
+
+            expect(toast.error).toHaveBeenCalledWith('something went wrong');
+        });
+    });
+
 });
