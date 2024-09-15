@@ -17,9 +17,9 @@ jest.mock("../../components/AdminMenu", () => () => <div>AdminMenu Mock</div>);
 jest.mock("../../components/Layout", () => ({ children }) => <div>{children}</div>);
 
 describe("Products Component", () => {
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//   });
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   it("renders the products when API call is successful", async () => {
     const mockAuth = {
@@ -53,17 +53,14 @@ describe("Products Component", () => {
             </MemoryRouter>
     );
 
-    // Assert that the API call was made
     await waitFor(() => expect(axios.get).toHaveBeenCalledWith("/api/v1/product/get-product"));
 
-    // Assert the products are rendered
     expect(screen.getByText("All Products List")).toBeInTheDocument();
     expect(await screen.findByText("Test Product 1")).toBeInTheDocument();
     expect(await screen.findByText("Description for product 1")).toBeInTheDocument();
     expect(await screen.findByText("Test Product 2")).toBeInTheDocument();
     expect(await screen.findByText("Description for product 2")).toBeInTheDocument();
 
-    // Assert that the links are generated correctly
     expect(screen.getByRole("link", { name: "Test Product 1 Test Product 1 Description for product 1" })).toHaveAttribute(
       "href",
       "/dashboard/admin/product/test-product-1"
