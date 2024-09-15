@@ -17,7 +17,6 @@ jest.mock("../../context/auth", () => ({
 jest.mock("../../components/Layout", () => ({ children }) => (
     <div>{children}</div>
 ));
-jest.mock("../../components/UserMenu", () => () => <div>User Menu</div>);
 
 describe("AdminOrders Component", () => {
     it("should render the orders from the API", async () => {
