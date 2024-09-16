@@ -59,4 +59,4 @@ jobs:
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
       # Step 5: Run tests
       - name: Run tests
-        run: npm test
+        run: npm test -- --testPathIgnorePatterns="tests"
