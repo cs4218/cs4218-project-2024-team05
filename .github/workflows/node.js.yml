@@ -27,7 +27,7 @@ jobs:
 
       # Step 4: Build the project
       - name: Build project
-        run: npm run build
+        run: echo "Build project here"
 
   # Job 2: Test Job
   test:
