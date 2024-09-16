@@ -47,14 +47,14 @@ jobs:
       # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
-        
+
       - name: Install frontend dependencies
         run: npm install --prefix ./client
 
       # Step 4: Set up environment variables from GitHub Secrets
       - name: Setup environment variables
         run: |
-          echo "NODE_ENV=production" >> $GITHUB_ENV
+          echo "NODE_ENV=test" >> $GITHUB_ENV
           echo "API_KEY=${{ secrets.API_KEY }}" >> $GITHUB_ENV
           echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
       # Step 5: Run tests
