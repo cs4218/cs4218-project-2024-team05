@@ -50,6 +50,9 @@ jobs:
       # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
+        
+      - name: Install frontend dependencies
+        run: npm install --prefix ./client
 
       # Step 4: Set up environment variables from GitHub Secrets
       - name: Setup environment variables
