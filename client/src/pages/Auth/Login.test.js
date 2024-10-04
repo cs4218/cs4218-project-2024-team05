@@ -22,6 +22,18 @@ jest.mock('../../context/search', () => ({
   useSearch: jest.fn(() => [{ keyword: '' }, jest.fn()]) // Mock useSearch hook to return null state and a mock function
 }));
 
+const mockedNavigate = jest.fn();
+// jest.mock('react-router-dom', () => ({
+//   useNavigate: jest.fn(() => ({ navigate: mockedNavigate })) // Mock useNavigate hook to return null state and a mock function
+// }));
+jest.mock('react-router-dom', () => {
+  const actualNav = jest.requireActual('react-router-dom');
+  return {
+    ...actualNav,
+    useNavigate: () => mockedNavigate,
+  };
+});
+
 Object.defineProperty(window, 'localStorage', {
   value: {
     setItem: jest.fn(),
@@ -119,7 +131,12 @@ describe('Login Component', () => {
   });
 
   it('should display error message on invalid login email', async () => {
-    axios.post.mockRejectedValueOnce({ message: 'Email is not registerd' });
+    axios.post.mockResolvedValueOnce({
+      data: {
+        success: false,
+        message: 'Email is not registerd'
+      }
+    });
 
     render(
       <MemoryRouter initialEntries={['/login']}>
@@ -134,7 +151,7 @@ describe('Login Component', () => {
     fireEvent.click(screen.getByText('LOGIN'));
 
     await waitFor(() => expect(axios.post).toHaveBeenCalled());
-    expect(toast.error).toHaveBeenCalledWith('Something went wrong');
+    expect(toast.error).toHaveBeenCalledWith('Email is not registerd');
   });
   
   it('should display error message on invalid login password', async () => {
@@ -160,4 +177,20 @@ describe('Login Component', () => {
     await waitFor(() => expect(axios.post).toHaveBeenCalled());
     expect(toast.error).toHaveBeenCalledWith('Invalid Password');
   });
+
+  it('should navigate to forgot password page when clicked', async () => {
+    render(
+      <MemoryRouter initialEntries={['/login']}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByText('Forgot Password'));
+    expect(mockedNavigate).toHaveBeenCalledWith('/forgot-password');
+    expect(mockedNavigate).toHaveBeenCalledTimes(1);
+  });
+
+  //TODO test for non connection error, POST /api/v1/auth/login 500 10015.525 ms - 55
 });
