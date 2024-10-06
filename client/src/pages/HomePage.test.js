@@ -242,8 +242,8 @@ describe('HomePage Component', () => {
     create 5 tests for the 5 price ranges leaving both categories unchecked
     create 2 tests on the categories with t1 checked, t2 unchecked then t1 unchecked, t2 checked.
     Then create tests for the rest of the combinations
-    1. t1-checked and t2-unchecked for any price range 1-5
-    2. t1-unchecked and t2-checked for any price range 1-5
+    1. t1-checked and t2-unchecked for each price range 1-5
+    2. t1-unchecked and t2-checked for each price range 1-5
     */
 
     it("filters product by category, category 1", async () => {
@@ -293,6 +293,273 @@ describe('HomePage Component', () => {
         });
 
     })
+
+    it("filters product by category and price, category 1 and $0 to 19", async () => {
+        renderComponent();
+        await waitFor(() => expect(screen.getByText("test_product_1")).toBeInTheDocument());
+        const priceRadio = screen.getByLabelText("$0 to 19");
+        fireEvent.click(priceRadio);
+        const categoryCheckbox = screen.getByLabelText("category_1");
+        fireEvent.click(categoryCheckbox);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+                checked: ["c1"],
+                radio: [0, 19],
+            });
+        });
+        await waitFor(() => {
+            expect(screen.getByText("test_product_1")).toBeInTheDocument();
+        });
+
+        await waitFor(() => {
+            expect(screen.queryByText("test_product_2")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_3")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_4")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_5")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_6")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_7")).not.toBeInTheDocument();
+        });
+    });
+
+    it("filters product by category and price, category 2 and $0 to 19", async () => {
+        renderComponent();
+        await waitFor(() => expect(screen.getByText("test_product_1")).toBeInTheDocument());
+        const priceRadio = screen.getByLabelText("$0 to 19");
+        fireEvent.click(priceRadio);
+        const categoryCheckbox = screen.getByLabelText("category_2");
+        fireEvent.click(categoryCheckbox);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+                checked: ["c2"],
+                radio: [0, 19],
+            });
+        });
+        await waitFor(() => {
+            expect(screen.queryByText("test_product_1")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_2")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_3")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_4")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_5")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_6")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_7")).not.toBeInTheDocument();
+        });
+    });
+
+    it("filters product by category and price, category 1 and $20 to 39", async () => {
+        renderComponent();
+        await waitFor(() => expect(screen.getByText("test_product_1")).toBeInTheDocument());
+        const priceRadio = screen.getByLabelText("$20 to 39");
+        fireEvent.click(priceRadio);
+        const categoryCheckbox = screen.getByLabelText("category_1");
+        fireEvent.click(categoryCheckbox);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+                checked: ["c1"],
+                radio: [20, 39],
+            });
+        });
+        await waitFor(() => {
+            expect(screen.getByText("test_product_2")).toBeInTheDocument();
+        });
+
+        await waitFor(() => {
+            expect(screen.queryByText("test_product_1")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_3")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_4")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_5")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_6")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_7")).not.toBeInTheDocument();
+        });
+    });
+
+    it("filters product by category and price, category 2 and $20 to 39", async () => {
+        renderComponent();
+        await waitFor(() => expect(screen.getByText("test_product_1")).toBeInTheDocument());
+        const priceRadio = screen.getByLabelText("$20 to 39");
+        fireEvent.click(priceRadio);
+        const categoryCheckbox = screen.getByLabelText("category_2");
+        fireEvent.click(categoryCheckbox);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+                checked: ["c2"],
+                radio: [20, 39],
+            });
+        });
+        await waitFor(() => {
+            expect(screen.getByText("test_product_3")).toBeInTheDocument();
+        });
+
+        await waitFor(() => {
+            expect(screen.queryByText("test_product_1")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_2")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_4")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_5")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_6")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_7")).not.toBeInTheDocument();
+        });
+    });
+
+    it("filters product by category and price, category 1 and $40 to 59", async () => {
+        renderComponent();
+        await waitFor(() => expect(screen.getByText("test_product_1")).toBeInTheDocument());
+        const priceRadio = screen.getByLabelText("$40 to 59");
+        fireEvent.click(priceRadio);
+        const categoryCheckbox = screen.getByLabelText("category_1");
+        fireEvent.click(categoryCheckbox);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+                checked: ["c1"],
+                radio: [40, 59],
+            });
+        });
+        await waitFor(() => {
+            expect(screen.queryByText("test_product_1")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_2")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_3")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_4")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_5")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_6")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_7")).not.toBeInTheDocument();
+        });
+    });
+
+    it("filters product by category and price, category 2 and $40 to 59", async () => {
+        renderComponent();
+        await waitFor(() => expect(screen.getByText("test_product_1")).toBeInTheDocument());
+        const priceRadio = screen.getByLabelText("$40 to 59");
+        fireEvent.click(priceRadio);
+        const categoryCheckbox = screen.getByLabelText("category_2");
+        fireEvent.click(categoryCheckbox);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+                checked: ["c2"],
+                radio: [40, 59],
+            });
+        });
+        await waitFor(() => {
+            expect(screen.getByText("test_product_3")).toBeInTheDocument();
+        });
+
+        await waitFor(() => {
+            expect(screen.queryByText("test_product_1")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_2")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_4")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_5")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_6")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_7")).not.toBeInTheDocument();
+        });
+    });
+
+    it("filters product by category and price, category 1 and $60 to 79", async () => {
+        renderComponent();
+        await waitFor(() => expect(screen.getByText("test_product_1")).toBeInTheDocument());
+        const priceRadio = screen.getByLabelText("$60 to 79");
+        fireEvent.click(priceRadio);
+        const categoryCheckbox = screen.getByLabelText("category_1");
+        fireEvent.click(categoryCheckbox);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+                checked: ["c1"],
+                radio: [60, 79],
+            });
+        });
+        await waitFor(() => {
+            expect(screen.queryByText("test_product_1")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_2")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_3")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_4")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_5")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_6")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_7")).not.toBeInTheDocument();
+        });
+    });
+
+    it("filters product by category and price, category 2 and $60 to 79", async () => {
+        renderComponent();
+        await waitFor(() => expect(screen.getByText("test_product_1")).toBeInTheDocument());
+        const priceRadio = screen.getByLabelText("$60 to 79");
+        fireEvent.click(priceRadio);
+        const categoryCheckbox = screen.getByLabelText("category_2");
+        fireEvent.click(categoryCheckbox);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+                checked: ["c2"],
+                radio: [60, 79],
+            });
+        });
+        await waitFor(() => {
+            expect(screen.getByText("test_product_4")).toBeInTheDocument();
+        });
+
+        await waitFor(() => {
+            expect(screen.queryByText("test_product_1")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_2")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_3")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_5")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_6")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_7")).not.toBeInTheDocument();
+        });
+    });
+
+    it("filters product by category and price, category 1 and $80 to 99", async () => {
+        renderComponent();
+        await waitFor(() => expect(screen.getByText("test_product_1")).toBeInTheDocument());
+        const priceRadio = screen.getByLabelText("$80 to 99");
+        fireEvent.click(priceRadio);
+        const categoryCheckbox = screen.getByLabelText("category_1");
+        fireEvent.click(categoryCheckbox);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+                checked: ["c1"],
+                radio: [80, 99],
+            });
+        });
+        await waitFor(() => {
+            expect(screen.queryByText("test_product_1")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_2")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_3")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_4")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_5")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_6")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_7")).not.toBeInTheDocument();
+        });
+    });
+
+    it("filters product by category and price, category 2 and $80 to 99", async () => {
+        renderComponent();
+        await waitFor(() => expect(screen.getByText("test_product_1")).toBeInTheDocument());
+        const priceRadio = screen.getByLabelText("$80 to 99");
+        fireEvent.click(priceRadio);
+        const categoryCheckbox = screen.getByLabelText("category_2");
+        fireEvent.click(categoryCheckbox);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+                checked: ["c2"],
+                radio: [80, 99],
+            });
+        });
+        await waitFor(() => {
+            expect(screen.getByText("test_product_5")).toBeInTheDocument();
+        });
+        await waitFor(() => {
+            expect(screen.queryByText("test_product_1")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_2")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_3")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_4")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_6")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_7")).not.toBeInTheDocument();
+        });
+    });
 
     it("filters product by category and price, category 1 and $100 or more", async () => {
         renderComponent();
