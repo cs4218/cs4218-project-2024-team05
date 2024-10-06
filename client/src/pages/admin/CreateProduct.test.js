@@ -295,33 +295,6 @@ describe('CreateProduct Component', () => {
         });
     });
 
-    // TC-415
-    // it('should not display error when categories fetch error', async () => {
-    //     axios.get.mockResolvedValueOnce({
-    //         data: {
-    //             success: false,
-    //             message: 'Error while getting all categories',
-    //         },
-    //     });
-        
-    //     const { getByText } = render(
-    //         <MemoryRouter initialEntries={['/create-product']}>
-    //             <Routes>
-    //                 <Route path="/create-product" element={<CreateProduct />} />
-    //             </Routes>
-    //         </MemoryRouter>
-    //     );
-
-    //     await waitFor(() => {
-    //         expect(axios.get).toHaveBeenCalledWith('/api/v1/category/get-category');
-    //         const selectPlaceholder = getByText(/select a category/i);
-    //         fireEvent.mouseDown(selectPlaceholder);
-    //         expect(getByText('Category 1')).not.toBeInTheDocument();
-    //         expect(getByText('Category 2')).not.toBeInTheDocument();
-    //         expect(toast.error).not.toHaveBeenCalledWith('Error while getting all categories');
-    //     });
-    // });
-
     // TC-416
     it('should display error message on failed product creation', async () => {
         axios.post.mockImplementation(() => {
@@ -374,4 +347,62 @@ describe('CreateProduct Component', () => {
         });
     });
 
+    // TC-417
+    it.failing('should submit form data with all fields accurately filled when all fields are valid', async () => {
+        axios.post.mockReturnValue({
+            data: { success: true, message: 'Product Created Successfully' },
+        });
+
+        const { getByText, getByPlaceholderText } = render(
+            <MemoryRouter initialEntries={['/create-product']}>
+                <Routes>
+                    <Route path="/create-product" element={<CreateProduct />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        await waitFor(async () => {
+            expect(axios.get).toHaveBeenCalledWith("/api/v1/category/get-category");
+            const selectPlaceholder = getByText(/select a category/i);
+            fireEvent.mouseDown(selectPlaceholder);
+            const category = await getByText(/Category 1/i);
+            fireEvent.click(category);
+        });
+
+        fireEvent.change(getByPlaceholderText('write a name'), {
+            target: { value: 'Test Product' },
+        });
+        fireEvent.change(getByPlaceholderText('write a description'), {
+            target: { value: 'This is a test product' },
+        });
+        fireEvent.change(getByPlaceholderText('write a Price'), {
+            target: { value: '100' },
+        });
+        fireEvent.change(getByPlaceholderText('write a quantity'), {
+            target: { value: '10' },
+        });
+
+        const selectShipping = getByText(/select shipping/i);
+        fireEvent.mouseDown(selectShipping);
+        const shipping = getByText("Yes");
+        fireEvent.click(shipping);
+
+        fireEvent.click(getByText('CREATE PRODUCT'));
+
+        const expectedFormData = new FormData();
+        expectedFormData.append("name", "Test Product");
+        expectedFormData.append("description", "This is a test product");
+        expectedFormData.append("price", "100");
+        expectedFormData.append("quantity", "10");
+        expectedFormData.append("photo", "");
+        expectedFormData.append("category", "1"); 
+        expectedFormData.append("shipping", "Yes"); 
+        
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith(
+                '/api/v1/product/create-product',
+                expectedFormData
+            );
+        });
+    });
 });
