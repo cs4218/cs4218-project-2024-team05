@@ -67,4 +67,115 @@ describe("Orders Component", () => {
 
     expect(screen.getByText("All Orders")).toBeInTheDocument();
   });
+
+  // Multiple products in an order
+
+  it("should render orders with multiple products", async () => {
+    const mockAuth = {
+      token: "fake-token",
+      user: { name: "Test User" },
+    };
+    useAuth.mockReturnValue([mockAuth]);
+
+    const mockOrders = [
+      {
+        _id: "order1",
+        status: "Delivered",
+        buyer: { name: "tyy" },
+        createAt: "2024-09-09T12:00:00Z",
+        payment: { success: true },
+        products: [
+          {
+            _id: "1",
+            name: "Product 1",
+            description: "Description of Product 1",
+            price: 10,
+          },
+          {
+            _id: "2",
+            name: "Product 2",
+            description: "Description of Product 2",
+            price: 20,
+          },
+        ],
+      },
+    ];
+
+    axios.get.mockResolvedValue({ data: mockOrders });
+
+    render(<Orders />);
+
+    expect(await screen.findByText("Product 1")).toBeInTheDocument();
+    expect(await screen.findByText("Product 2")).toBeInTheDocument();
+  });
+
+  // Failed payment
+
+  it("should render a failed payment status", async () => {
+    const mockAuth = {
+      token: "fake-token",
+      user: { name: "Test User" },
+    };
+    useAuth.mockReturnValue([mockAuth]);
+
+    const mockOrders = [
+      {
+        _id: "order1",
+        status: "Not Process",
+        buyer: { name: "tyy" },
+        createAt: "2024-09-09T12:00:00Z",
+        payment: { success: false },
+        products: [
+          {
+            _id: "1",
+            name: "Product 1",
+            description: "Description of Product 1",
+            price: 10,
+          },
+        ],
+      },
+    ];
+
+    axios.get.mockResolvedValue({ data: mockOrders });
+
+    render(<Orders />);
+
+    expect(await screen.findByText("Not Process")).toBeInTheDocument();
+    expect(await screen.findByText("Failed")).toBeInTheDocument();
+  });
+
+  it("should render an order even if some product information is missing", async () => {
+    const mockAuth = {
+      token: "fake-token",
+      user: { name: "Test User" },
+    };
+    useAuth.mockReturnValue([mockAuth]);
+
+    const mockOrders = [
+      {
+        _id: "order1",
+        status: "Delivered",
+        buyer: { name: "tyy" },
+        createAt: "2024-09-09T12:00:00Z",
+        payment: { success: true },
+        products: [
+          {
+            _id: "1",
+            name: null,
+            description: "Description of Product 1",
+            price: null,
+          },
+        ],
+      },
+    ];
+
+    axios.get.mockResolvedValue({ data: mockOrders });
+
+    render(<Orders />);
+
+    expect(
+      await screen.findByText("Description of Product 1")
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Price : ")).not.toBeInTheDocument();
+  });
 });
