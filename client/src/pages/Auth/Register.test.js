@@ -93,7 +93,7 @@ describe('Register Component', () => {
     expect(screen.getByPlaceholderText('What is Your Favorite sports').value).toBe('');
   });
 
-  it('should allow typing email and password', () => {
+  it('should allow typing in all input fields', () => {
     render(
       <MemoryRouter initialEntries={['/register']}>
         <Routes>
