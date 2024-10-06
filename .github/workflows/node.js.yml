@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - branch-unit-test-home-page
       - branch-unit-tests-admin
   pull_request:
 
@@ -24,6 +25,9 @@ jobs:
       # Step 3: Install dependencies
       - name: Install dependencies
         run: npm install
+
+      - name: Install frontend dependencies
+        run: npm install --prefix ./client
 
       # Step 4: Build the project
       - name: Build project
