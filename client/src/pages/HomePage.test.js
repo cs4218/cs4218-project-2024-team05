@@ -116,6 +116,8 @@ describe('HomePage Component', () => {
         name: "category_2"
     }]
 
+    const mockReload = jest.fn();
+
     beforeEach(() => {
         axios.get.mockImplementation((url) => {
             if (url.includes("/api/v1/category/get-category")) {
@@ -143,6 +145,11 @@ describe('HomePage Component', () => {
                 });
                 return Promise.resolve({ data: { products: filteredProducts } });
             }
+        });
+
+        Object.defineProperty(window, "location", {
+            writable: true,
+            value: { reload: mockReload },
         });
 
     });
@@ -231,6 +238,14 @@ describe('HomePage Component', () => {
         expect(navigate).toHaveBeenCalledWith("/product/pdt1");
     })
 
+    /* Combinatorial testing for filtering products
+    create 5 tests for the 5 price ranges leaving both categories unchecked
+    create 2 tests on the categories with t1 checked, t2 unchecked then t1 unchecked, t2 checked.
+    Then create tests for the rest of the combinations
+    1. t1-checked and t2-unchecked for any price range 1-5
+    2. t1-unchecked and t2-checked for any price range 1-5
+    */
+
     it("filters product by category, category 1", async () => {
         renderComponent();
 
@@ -278,6 +293,62 @@ describe('HomePage Component', () => {
         });
 
     })
+
+    it("filters product by category and price, category 1 and $100 or more", async () => {
+        renderComponent();
+        await waitFor(() => expect(screen.getByText("test_product_1")).toBeInTheDocument());
+        const priceRadio = screen.getByLabelText("$100 or more");
+        fireEvent.click(priceRadio);
+        const categoryCheckbox = screen.getByLabelText("category_1");
+        fireEvent.click(categoryCheckbox);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+                checked: ["c1"],
+                radio: [100, 9999],
+            });
+        });
+        await waitFor(() => {
+            expect(screen.getByText("test_product_7")).toBeInTheDocument();
+        });
+
+        await waitFor(() => {
+            expect(screen.queryByText("test_product_1")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_2")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_3")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_4")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_5")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_6")).not.toBeInTheDocument();
+        });
+    });
+
+    it("filters product by category and price, category 2 and $100 or more", async () => {
+        renderComponent();
+        await waitFor(() => expect(screen.getByText("test_product_1")).toBeInTheDocument());
+        const priceRadio = screen.getByLabelText("$100 or more");
+        fireEvent.click(priceRadio);
+        const categoryCheckbox = screen.getByLabelText("category_2");
+        fireEvent.click(categoryCheckbox);
+
+        await waitFor(() => {
+            expect(axios.post).toHaveBeenCalledWith("/api/v1/product/product-filters", {
+                checked: ["c2"],
+                radio: [100, 9999],
+            });
+        });
+        await waitFor(() => {
+            expect(screen.getByText("test_product_6")).toBeInTheDocument();
+        });
+
+        await waitFor(() => {
+            expect(screen.queryByText("test_product_1")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_2")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_3")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_4")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_5")).not.toBeInTheDocument();
+            expect(screen.queryByText("test_product_7")).not.toBeInTheDocument();
+        });
+    });
 
     it("filters product by price, $0 to 19", async () => {
         renderComponent();
@@ -453,6 +524,16 @@ describe('HomePage Component', () => {
         });
     });
 
+    it("should call window.location.reload when the reset filters button is clicked", () => {
+        // Render the component
+        renderComponent();
+
+        const resetButton = screen.getByText("RESET FILTERS");
+    
+        fireEvent.click(resetButton);
+    
+        expect(mockReload).toHaveBeenCalled();
+      });
 
 })
 

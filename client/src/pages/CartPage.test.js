@@ -98,8 +98,30 @@ describe('CartPage Component', () => {
                 </Routes>
             </MemoryRouter>
         );
+    
+    //Combinatorial pairwise testing
+    /* 
+    test cases:
+    1. User is authenticated and has an empty cart
+    2. User is authenticated and has items in cart 
+    3. Guest user and empty cart 
+    4. Guest user and has items in cart
+    */
 
-    it("renders CartPage and displays cart items if user has login", async () => {
+    // test case 1
+    it("renders CartPage and displays empty cart when user has login", async () => {
+        useCart.mockReturnValue([[], jest.fn()]);
+        renderComponent();
+
+        await waitFor(() => {
+            expect(screen.getByText('Hello John Doe')).toBeInTheDocument();
+            expect(screen.getByText('Your Cart Is Empty')).toBeInTheDocument();
+            expect(screen.getByText('123 Main St')).toBeInTheDocument();
+        });
+    });
+
+    // test case 2
+    it("renders CartPage and displays cart items when user has login", async () => {
         renderComponent();
 
         await waitFor(() => {
@@ -108,6 +130,61 @@ describe('CartPage Component', () => {
             expect(screen.getByText('test_product_1')).toBeInTheDocument();
             expect(screen.getByText('test_product_2')).toBeInTheDocument();
             expect(screen.getByText('123 Main St')).toBeInTheDocument();
+        });
+    });
+
+    // test case 3
+    it("renders CartPage and displays empty cart when user is guest", async () => {
+        useAuth.mockReturnValue([{ token: null, user: null }, jest.fn()]);
+        useCart.mockReturnValue([[], jest.fn()]);
+        renderComponent();
+
+        await waitFor(() => {
+            expect(screen.getByText('Hello Guest')).toBeInTheDocument();
+            expect(screen.getByText('Your Cart Is Empty')).toBeInTheDocument();
+        });
+    });
+
+    // test case 4
+    it("renders CartPage and displays cart items when user is guest", async () => {
+        useAuth.mockReturnValue([{ token: null, user: null }, jest.fn()]);
+        renderComponent();
+        await waitFor(() => {
+            expect(screen.getByText('Hello Guest')).toBeInTheDocument();
+            expect(screen.getByText('You Have 2 items in your cart please login to checkout !')).toBeInTheDocument();
+            expect(screen.getByText('test_product_1')).toBeInTheDocument();
+            expect(screen.getByText('test_product_2')).toBeInTheDocument();
+        });
+    });
+
+    it('navigates to user profile if user is logged in', async () => {
+        //useAuth.mockReturnValue([{ ...mockAuth, user: { ...mockAuth.user, address: null } }, jest.fn()]);
+        const navigate = jest.fn();
+        useNavigate.mockReturnValue(navigate);
+        renderComponent();
+
+        fireEvent.click(screen.getByText('Update Address'));
+
+        await waitFor(() => {
+            expect(navigate).toHaveBeenCalledWith('/dashboard/user/profile');
+        });
+    });
+
+    it('navigates to login if address is not present and user is not logged in', async () => {
+        useAuth.mockReturnValue([{ token: null, user: null }, jest.fn()]);
+        const navigate = jest.fn();
+        useNavigate.mockReturnValue(navigate);
+        renderComponent();
+
+        fireEvent.click(screen.getByText('Plase Login to checkout'));
+        await waitFor(() => {
+            expect(screen.getByText('Hello Guest')).toBeInTheDocument();
+            expect(screen.getByText('You Have 2 items in your cart please login to checkout !')).toBeInTheDocument();
+            expect(screen.getByText('test_product_1')).toBeInTheDocument();
+            expect(screen.getByText('test_product_2')).toBeInTheDocument();
+        });
+        await waitFor(() => {
+            expect(navigate).toHaveBeenCalledWith('/login', { state: '/cart' });
         });
     });
 
@@ -218,37 +295,6 @@ describe('CartPage Component', () => {
             expect(toast.success).toHaveBeenCalledWith('Payment Completed Successfully ');
             expect(window.localStorage.removeItem).toHaveBeenCalledWith('cart');
             expect(navigate).toHaveBeenCalledWith('/dashboard/user/orders');
-        });
-    });
-
-    it('navigates to user profile if address is not present and user is logged in', async () => {
-        useAuth.mockReturnValue([{ ...mockAuth, user: { ...mockAuth.user, address: null } }, jest.fn()]);
-        const navigate = jest.fn();
-        useNavigate.mockReturnValue(navigate);
-        renderComponent();
-
-        fireEvent.click(screen.getByText('Update Address'));
-
-        await waitFor(() => {
-            expect(navigate).toHaveBeenCalledWith('/dashboard/user/profile');
-        });
-    });
-
-    it('navigates to login if address is not present and user is not logged in', async () => {
-        useAuth.mockReturnValue([{ token: null, user: null }, jest.fn()]);
-        const navigate = jest.fn();
-        useNavigate.mockReturnValue(navigate);
-        renderComponent();
-
-        fireEvent.click(screen.getByText('Plase Login to checkout'));
-        await waitFor(() => {
-            expect(screen.getByText('Hello Guest')).toBeInTheDocument();
-            expect(screen.getByText('You Have 2 items in your cart please login to checkout !')).toBeInTheDocument();
-            expect(screen.getByText('test_product_1')).toBeInTheDocument();
-            expect(screen.getByText('test_product_2')).toBeInTheDocument();
-        });
-        await waitFor(() => {
-            expect(navigate).toHaveBeenCalledWith('/login', { state: '/cart' });
         });
     });
 });
