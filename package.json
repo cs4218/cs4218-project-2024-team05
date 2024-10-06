@@ -59,6 +59,7 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/tests-examples/demo-todo-app.spec.js"
-    ]
+    ],
+    "setupFiles": ["<rootDir>/jest.setup.js"]
   }
 }
