@@ -393,4 +393,15 @@ describe('Register Component', () => {
     expect(toast.error).toHaveBeenCalledWith('Something went wrong');
   });
 
+  it('should have the password field hidden with (type="password")', async () => {
+    render(
+      <MemoryRouter initialEntries={['/register']}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByPlaceholderText('Enter Your Password')).toHaveAttribute('type', 'password');
+  });
 });
