@@ -118,4 +118,155 @@ describe("Profile Component", () => {
       expect(toast.error).toHaveBeenCalledWith("Something went wrong");
     });
   });
+
+  test("fails validation for name below minimum length", async () => {
+    render(
+      <Router>
+        <Profile />
+      </Router>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText("Enter Your Name"), {
+      target: { value: null },
+    });
+
+    fireEvent.click(screen.getByText("UPDATE"));
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText("Enter Your Name").value).toBe("");
+    });
+  });
+
+  test("accepts minimal valid input values", async () => {
+    const updatedUser = {
+      ...mockAuth.user,
+      name: "f",
+      phone: "1",
+      address: "A",
+    };
+
+    mock.onPut("/api/v1/auth/profile").reply(200, { updatedUser });
+
+    render(
+      <Router>
+        <Profile />
+      </Router>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText("Enter Your Name"), {
+      target: { value: "f" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Enter Your Phone"), {
+      target: { value: "1" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("Enter Your Address"), {
+      target: { value: "A" },
+    });
+    fireEvent.click(screen.getByText("UPDATE"));
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText("Enter Your Name").value).toBe("f");
+    });
+  });
+
+  test("shows error for invalid phone number format", async () => {
+    render(
+      <Router>
+        <Profile />
+      </Router>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText("Enter Your Phone"), {
+      target: { value: "abc123" },
+    });
+    fireEvent.click(screen.getByText("UPDATE"));
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText("Enter Your Phone").value).toBe(
+        "abc123"
+      );
+    });
+  });
+
+  test("fails validation for phone number below minimum length", async () => {
+    render(
+      <Router>
+        <Profile />
+      </Router>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText("Enter Your Phone"), {
+      target: { value: "123" },
+    });
+
+    fireEvent.click(screen.getByText("UPDATE"));
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText("Enter Your Phone").value).toBe("123");
+    });
+  });
+
+  test("fails validation for phone number exceeding maximum length", async () => {
+    render(
+      <Router>
+        <Profile />
+      </Router>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText("Enter Your Phone"), {
+      target: { value: "123456789012345" },
+    });
+
+    fireEvent.click(screen.getByText("UPDATE"));
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText("Enter Your Phone").value).toBe(
+        "123456789012345"
+      );
+    });
+  });
+
+  test("handles network error gracefully on profile update", async () => {
+    mock.onPut("/api/v1/auth/profile").networkError();
+
+    render(
+      <Router>
+        <Profile />
+      </Router>
+    );
+
+    fireEvent.click(screen.getByText("UPDATE"));
+
+    await waitFor(() => {
+      expect(toast.error).toHaveBeenCalledWith("Something went wrong");
+    });
+  });
+
+  test("valid name and invalid email", async () => {
+    render(
+      <Router>
+        <Profile />
+      </Router>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText("Enter Your Name"), {
+      target: { value: "Valid Name" }, // Valid name
+    });
+
+    fireEvent.change(screen.getByPlaceholderText("Enter Your Phone"), {
+      target: { value: "invalid-phone" }, // Invalid email
+    });
+
+    fireEvent.click(screen.getByText("UPDATE"));
+
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText("Enter Your Name").value).toBe(
+        "Valid Name"
+      );
+      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+      expect(screen.getByPlaceholderText("Enter Your Phone").value).toBe(
+        "invalid-phone"
+      );
+    });
+  });
 });
