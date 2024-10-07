@@ -38,6 +38,7 @@
     "@babel/preset-env": "^7.24.5",
     "@babel/preset-react": "^7.24.1",
     "@playwright/test": "^1.47.1",
+    "@testing-library/jest-dom": "^6.5.0",
     "@types/node": "^20.12.12",
     "babel-jest": "^29.7.0",
     "identity-obj-proxy": "^3.0.0",
@@ -60,6 +61,8 @@
       "/node_modules/",
       "/tests-examples/demo-todo-app.spec.js"
     ],
-    "setupFiles": ["<rootDir>/jest.setup.js"]
+    "setupFiles": [
+      "<rootDir>/jest.setup.js"
+    ]
   }
 }
