@@ -36,7 +36,7 @@ describe('CreateCategory Component', () => {
 
     });
 
-    it('renders the CreateCategory page with Header.js dependencies', () => {
+    it('renders the CreateCategory page with Header.js hooks dependencies', () => {
         localStorage.setItem('auth', JSON.stringify({
             user: { name: 'John Doe', email: 'admin@example.com' },
             token: 'some-token',
