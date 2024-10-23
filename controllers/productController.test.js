@@ -40,7 +40,6 @@ describe('Product Controller Integration Tests', () => {
         await mongoServer.stop();
     });
 
-    // Create Product
     it('should create a new product', async () => {
         const newCategory = await categoryModel.create({ name: 'Electronics', slug: 'electronics' });
         const newProduct = {
@@ -71,10 +70,42 @@ describe('Product Controller Integration Tests', () => {
         }
     });
 
+
+    it('should return 500 if price is not a number', async () => {
+        const newCategory = await categoryModel.create({ name: 'Electronics', slug: 'electronics' });
+
+        request.fields = {
+            name: 'Invalid Price Product',
+            description: 'Product with invalid price',
+            price: 'invalid', // Invalid price (should be a number)
+            category: newCategory._id,
+            quantity: 10,
+            shipping: true,
+        };
+        request.files = {
+            photo: {
+                path: 'assets/haribo.jpg',
+                type: 'image/jpeg',
+                size: 500000
+            }
+        };
+        await createProductController(request, response);
+
+        expect(response.status).toHaveBeenCalledWith(500);
+        expect(response.send).toHaveBeenCalledWith(expect.objectContaining({
+            success: false,
+            message: "Error in crearing product",
+            error: expect.any(Error), 
+        }));
+    
+        const errorResponse = response.send.mock.calls[0][0].error; 
+        expect(errorResponse.message.toLowerCase()).toContain("price".toLowerCase()); 
+    });
+
     it('should update a product', async () => {
         // Step 1: Create a new category
         const newCategory = await categoryModel.create({ name: 'Electronics', slug: 'electronics' });
-    
+
         // Step 2: Create a product to be updated
         const product = await productModel.create({
             name: 'Old Product',
@@ -85,25 +116,25 @@ describe('Product Controller Integration Tests', () => {
             shipping: false,
             slug: slugify('Old Product', { lower: true }), // Ensure slug is set on creation
         });
-    
+
         // Step 3: Prepare the request for updating the product
-        request.params = { pid: product._id }; 
+        request.params = { pid: product._id };
         request.fields = {
             name: 'Updated Product',
             description: 'Updated Description', // updated
             price: 75,
-            category: newCategory._id, 
-            quantity: 10, 
-            shipping: true, 
+            category: newCategory._id,
+            quantity: 10,
+            shipping: true,
         };
-        request.files = { 
-            photo: { 
-                path: 'assets/haribo.jpg', 
-                type: 'image/jpeg', 
-                size: 500000 
-            } 
+        request.files = {
+            photo: {
+                path: 'assets/haribo.jpg',
+                type: 'image/jpeg',
+                size: 500000
+            }
         };
-        
+
         // Step 4: Call the updateProductController
         await updateProductController(request, response);
 
@@ -113,20 +144,17 @@ describe('Product Controller Integration Tests', () => {
             success: true,
             message: "Product Updated Successfully",
         }));
-    
+
         // Step 6: Retrieve the updated product from the database
         const updatedProduct = await productModel.findById(product._id);
-    
+
         // Step 7: Validate the updates
         expect(updatedProduct.name).toBe('Updated Product');
         expect(updatedProduct.price).toBe(75);
-        expect(updatedProduct.description).toBe('Updated Description'); 
+        expect(updatedProduct.description).toBe('Updated Description');
         expect(updatedProduct.slug).toBe('Updated-Product');
     });
-    
-    
 
-    // Delete Product
     it('should delete a product', async () => {
         const newCategory = await categoryModel.create({ name: 'Electronics', slug: 'electronics' });
         const product = await productModel.create({
@@ -136,7 +164,7 @@ describe('Product Controller Integration Tests', () => {
             category: newCategory._id,
             quantity: 10,
             shipping: true,
-            slug: slugify('Delete Product', { lower: true }), 
+            slug: slugify('Delete Product', { lower: true }),
         });
 
         request.params = { pid: product._id };
