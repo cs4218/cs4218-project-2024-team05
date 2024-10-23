@@ -51,6 +51,12 @@
     "sonarqube-scanner": "^3.3.0"
   },
   "jest": {
+    "collectCoverage": true,
+    "coverageReporters": [
+      "lcov",
+      "text"
+    ],
+    "coverageDirectory": "./coverage",
     "testEnvironment": "jest-environment-jsdom",
     "transform": {
       "^.+\\.jsx?$": "babel-jest"
