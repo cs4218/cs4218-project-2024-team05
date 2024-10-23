@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - branch-unit-test-home-page
+      - branch-unit-tests-admin
   pull_request:
 
 jobs:

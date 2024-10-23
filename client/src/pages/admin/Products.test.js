@@ -5,9 +5,8 @@ import { useAuth } from "../../context/auth";
 import axios from "axios";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import toast from "react-hot-toast";
-import "@testing-library/jest-dom/extend-expect"; // for matchers like toBeInTheDocument
+import "@testing-library/jest-dom/extend-expect";
 
-// Mock necessary modules
 jest.mock("axios");
 jest.mock("../../context/auth", () => ({
     useAuth: jest.fn(() => [null, jest.fn()]),
@@ -72,7 +71,6 @@ describe("Products Component", () => {
   });
 
   it("shows an error toast when API call fails", async () => {
-    // Mock axios GET request to throw an error
     axios.get.mockRejectedValueOnce(new Error("Failed to fetch products"));
 
     render(
