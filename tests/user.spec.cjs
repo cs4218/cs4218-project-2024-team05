@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('test', async ({ page }) => {
   await page.goto('http://localhost:3000/');
+  await page.getByRole('link', { name: 'Login' }).toBeInTheDocument();
   await page.getByRole('link', { name: 'Login' }).click();
   await page.getByPlaceholder('Enter Your Email ').fill('test@test.com');
   await page.getByPlaceholder('Enter Your Password').click();
