@@ -2,5 +2,5 @@ projectKey=CS4218
 serverUrl=http://localhost:9000
 serverVersion=10.7.0.96327
 dashboardUrl=http://localhost:9000/dashboard?id=CS4218
-ceTaskId=2ce7acfe-3a48-401f-99f2-de5130ed1fbb
-ceTaskUrl=http://localhost:9000/api/ce/task?id=2ce7acfe-3a48-401f-99f2-de5130ed1fbb
+ceTaskId=219f922a-4248-4223-b408-5ea76bdfeb80
+ceTaskUrl=http://localhost:9000/api/ce/task?id=219f922a-4248-4223-b408-5ea76bdfeb80
