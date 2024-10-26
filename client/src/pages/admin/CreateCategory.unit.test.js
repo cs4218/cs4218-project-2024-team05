@@ -274,7 +274,7 @@ describe('CreateCategory Component', () => {
 
             const inputFields = within(modal).getAllByPlaceholderText(/Enter new category/i);
             fireEvent.change(inputFields[0], { target: { value: 'Updated Category 1' } });
-        
+
             const updateButton = within(modal).getByText(/submit/i);
             fireEvent.click(updateButton);
         });
@@ -319,7 +319,7 @@ describe('CreateCategory Component', () => {
 
             const inputFields = within(modal).getAllByPlaceholderText(/Enter new category/i);
             fireEvent.change(inputFields[0], { target: { value: 'Updated Category 1' } });
-        
+
             const updateButton = within(modal).getByText(/submit/i);
             fireEvent.click(updateButton);
 
