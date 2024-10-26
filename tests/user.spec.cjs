@@ -1,10 +1,11 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
 
 test('test', async ({ page }) => {
-  await page.goto('http://localhost:3000/');
-  await page.getByRole('link', { name: 'Login' }).toBeInTheDocument();
+  await page.goto('http://localhost:3000'); // adding a / at the end causes the test to occasionally fail
+  // await page.getByRole('link', { name: 'Login' }).toBeInTheDocument();
   await page.getByRole('link', { name: 'Login' }).click();
-  await page.getByPlaceholder('Enter Your Email ').fill('test@test.com');
+  await page.getByPlaceholder('Enter Your Email ').fill('example123@example.com');
   await page.getByPlaceholder('Enter Your Password').click();
   await page.getByPlaceholder('Enter Your Password').fill('123456');
   await page.getByRole('button', { name: 'LOGIN' }).click();
@@ -13,9 +14,9 @@ test('test', async ({ page }) => {
   await page.getByRole('link', { name: 'Categories' }).click();
   await page.getByRole('link', { name: 'All Categories' }).click();
   await page.getByRole('link', { name: 'Categories' }).click();
-  await page.locator('#navbarTogglerDemo01').getByRole('link', { name: 'Clothing' }).click();
+  await page.locator('#navbarTogglerDemo01').getByRole('link', { name: 'Food and Beverages' }).click();
   await page.getByRole('link', { name: 'Home' }).click();
-  await page.getByLabel('Clothing').check();
+  await page.getByLabel('Food and Beverages').check();
   await page.getByLabel('$40 to').check();
   await page.getByRole('button', { name: 'test' }).click();
   await page.getByRole('link', { name: 'Dashboard' }).click();
