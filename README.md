@@ -26,4 +26,4 @@ In the repository of your team, tag the submitted commit with a tag name â€œms1â
 | Fang Yiye     | Home, categories, cartPage | -`controllers/caetgoryControllerIntegration.test.js`<br>-`tests/CartPage.spec.cjs`<br>-`tests/HomePage.spec.cjs`<br>-`tests/Categories.spec.cjs`                            |
 | Jeremiah Lim  | Authentication Tasks       | -`controllers/AuthIntegration.test.js`<br>-`tests/auth.spec.cjs`                            |
 | Contributor 4 |                            |                             |
-| Contributor 5 |                            |                             |
+| Khor Vanessa  | Search, Product, Contact   | -`tests/product.spec.cjs`<br>-`tests/search.spec.cjs`                              |
