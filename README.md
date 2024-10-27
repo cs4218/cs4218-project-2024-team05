@@ -18,3 +18,12 @@ In the repository of your team, tag the submitted commit with a tag name “ms1�
 1. Create a tag, e.g., git tag -a ms1 -m “Milestone 1”
 2. Push the created tag into the repository, e.g., git push origin ms1
 3. More details are in: http://git-scm.com/book/en/v2/Git-Basics-Tagging
+
+## Milestone 2 Contributions 
+| Contributor   | Responsibility             | Files Edited               |
+|---------------|----------------------------|-----------------------------|
+| Lin Leyi      | Administrative Tasks       | -`client/src/pages/admin/CreateCategory.integration.test.js`<br>-`controllers/productController.test.js`<br>-`tests/admin.spec.cjs`                            |
+| Contributor 2 |                            |                             |
+| Contributor 3 |                            |                             |
+| Contributor 4 |                            |                             |
+| Contributor 5 |                            |                             |
