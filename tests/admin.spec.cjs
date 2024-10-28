@@ -11,18 +11,9 @@ test.describe('Admin Dashboard Flow', () => {
         await page.getByPlaceholder('Enter Your Password').fill('Test123');
         await page.getByRole('button', { name: 'LOGIN' }).click();
 
-        // Click on header with "Leyi"
         await page.locator('text=LEYI').click();
-
-        // Wait for the dropdown to be visible and click the 'Dashboard' link
         await page.locator('text=DASHBOARD').click();
         await expect(page).toHaveURL('http://localhost:3000/dashboard/admin');
-    });
-
-    test.afterEach(async ({ page }) => {
-        // Log out
-        await page.locator('text=LEYI').click();
-        await page.locator('text=Logout').click();
     });
 
     // Test 1: Create and Delete Category
@@ -62,7 +53,9 @@ test.describe('Admin Dashboard Flow', () => {
         const filePath = 'assets/haribo.jpg';
         await page.setInputFiles('input[type="file"]', filePath);
 
-        await page.getByPlaceholder('write a name').fill('Test Product');
+        const productName = `TestPdt2_${new Date().toISOString().replace(/[:.-]/g, '')}`;
+
+        await page.getByPlaceholder('write a name').fill(productName);
         await page.getByPlaceholder('write a description').fill('This is for testing.');
         await page.getByPlaceholder('write a Price').fill('19.99');
         await page.getByPlaceholder('write a quantity').fill('100');
@@ -79,10 +72,10 @@ test.describe('Admin Dashboard Flow', () => {
 
         // Reload and check if product is listed
         await page.reload();
-        await expect(page.locator('text=Test Product')).toBeVisible();
+        await expect(page.locator(`text=${productName}`)).toBeVisible();
 
         // Delete the product
-        await page.getByRole('link', { name: 'Test Product Test Product' }).click();
+        await page.getByRole('link', { name: `${productName} ${productName}` }).click();
         await expect(page.locator('text=This is for testing.')).toBeVisible();
         page.on('dialog', dialog => {
             dialog.accept('yes'); 
@@ -90,7 +83,7 @@ test.describe('Admin Dashboard Flow', () => {
         await page.getByRole('button', { name: 'DELETE PRODUCT' }).click();
 
         // Ensure product is deleted
-        await expect(page.locator('text=Test Product')).toBeHidden();
+        await expect(page.locator(`text=${productName}`)).toBeHidden();
     });
 
     // Test 3: Create Product, Update Product, and Delete Product
@@ -108,7 +101,9 @@ test.describe('Admin Dashboard Flow', () => {
         const filePath = 'assets/haribo.jpg';
         await page.setInputFiles('input[type="file"]', filePath);
 
-        await page.getByPlaceholder('write a name').fill('Test Pdt');
+        const productName = `TestPdt_${new Date().toISOString().replace(/[:.-]/g, '')}`;
+
+        await page.getByPlaceholder('write a name').fill(productName);
         await page.getByPlaceholder('write a description').fill('This is for testing.');
         await page.getByPlaceholder('write a Price').fill('19.99');
         await page.getByPlaceholder('write a quantity').fill('100');
@@ -127,10 +122,10 @@ test.describe('Admin Dashboard Flow', () => {
 
         // Reload and check if product is listed
         await page.reload();
-        await expect(page.locator('text=Test Pdt')).toBeVisible();
+        await expect(page.locator(`text=${productName}`)).toBeVisible();
 
         // Update the product
-        await page.getByRole('link', { name: 'Test Pdt Test Pdt' }).click();
+        await page.getByRole('link', { name: `${productName} ${productName}` }).click();
         await expect(page.locator('text=This is for testing.')).toBeVisible();
         await page.getByPlaceholder('write a description').fill('Updated description.');
 
@@ -141,8 +136,8 @@ test.describe('Admin Dashboard Flow', () => {
 
         // Delete the product
         await page.reload();
-        await expect(page.locator('text=Test Pdt')).toBeVisible();
-        await page.getByRole('link', { name: 'Test Pdt Test Pdt' }).click();
+        await expect(page.locator(`text=${productName}`)).toBeVisible();
+        await page.getByRole('link', { name: `${productName} ${productName}` }).click();
         await expect(page.locator('text=Updated description.')).toBeVisible();
 
         page.on('dialog', dialog => {
@@ -151,6 +146,6 @@ test.describe('Admin Dashboard Flow', () => {
         await page.getByRole('button', { name: 'DELETE PRODUCT' }).click();
 
         // Ensure product is deleted
-        await expect(page.locator('text=Test Product')).toBeHidden();
+        await expect(page.locator(`text=${productName}`)).toBeHidden();
     });
 });
