@@ -1,12 +1,16 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/Lq2be5ao)
+
 # Instructions on creating team repository using GitHub Classroom
+
 ## Step 1. Ensure that your team formation through Canvas has been confirmed.
+
 Do not proceed to step 2 otherwise!
 
 ## Step 2. Visit the assignment link at https://classroom.github.com/a/Lq2be5ao
+
 The first member of the team to access this link will be prompted to accept the assignment that gives your team access to the new repository.
-Create a new team by typing 2024-TeamXX , where XX is the Team number as noted in Step 1 above. 
-(Note that the naming convention must be followed strictly, e.g. capitalisation, dash, and spacing. 
+Create a new team by typing 2024-TeamXX , where XX is the Team number as noted in Step 1 above.
+(Note that the naming convention must be followed strictly, e.g. capitalisation, dash, and spacing.
 If your group number is a single digit, i.e 2024-Team1 is fine as well.)
 
 The other members in the team will be able to see an existing team with your team number in the “Join an existing team” section. Click Join.
@@ -14,16 +18,19 @@ The other members in the team will be able to see an existing team with your tea
 ## Step 3. All of you should be able to see the acceptance page. Click on the assignment link to see the project on GitHub.
 
 # Milestone Submission Instructions
-In the repository of your team, tag the submitted commit with a tag name “ms1” (meaning milestone 1). 
+
+In the repository of your team, tag the submitted commit with a tag name “ms1” (meaning milestone 1).
+
 1. Create a tag, e.g., git tag -a ms1 -m “Milestone 1”
 2. Push the created tag into the repository, e.g., git push origin ms1
 3. More details are in: http://git-scm.com/book/en/v2/Git-Basics-Tagging
 
-## Milestone 2 Contributions 
-| Contributor   | Responsibility             | Files Edited               |
-|---------------|----------------------------|-----------------------------|
-| Lin Leyi      | Administrative Tasks       | -`client/src/pages/admin/CreateCategory.integration.test.js`<br>-`controllers/productController.test.js`<br>-`tests/admin.spec.cjs`                            |
-| Fang Yiye     | Home, categories, cartPage | -`controllers/caetgoryControllerIntegration.test.js`<br>-`tests/CartPage.spec.cjs`<br>-`tests/HomePage.spec.cjs`<br>-`tests/Categories.spec.cjs`                            |
-| Jeremiah Lim  | Authentication Tasks       | -`controllers/AuthIntegration.test.js`<br>-`tests/auth.spec.cjs`                            |
-| Contributor 4 |                            |                             |
-| Khor Vanessa  | Search, Product, Contact   | -`tests/product.spec.cjs`<br>-`tests/search.spec.cjs`                              |
+## Milestone 2 Contributions
+
+| Contributor   | Responsibility             | Files Edited                                                                                                                                     |
+| ------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Lin Leyi      | Administrative Tasks       | -`client/src/pages/admin/CreateCategory.integration.test.js`<br>-`controllers/productController.test.js`<br>-`tests/admin.spec.cjs`              |
+| Fang Yiye     | Home, categories, cartPage | -`controllers/caetgoryControllerIntegration.test.js`<br>-`tests/CartPage.spec.cjs`<br>-`tests/HomePage.spec.cjs`<br>-`tests/Categories.spec.cjs` |
+| Jeremiah Lim  | Authentication Tasks       | -`controllers/AuthIntegration.test.js`<br>-`tests/auth.spec.cjs`                                                                                 |
+| Tang Yuanyuan | User Management            | - `client/src/pages/user/Dashboard.integration.test.js`<br>-`tests/dashboard.spec.cjs`                                                           |
+| Khor Vanessa  | Search, Product, Contact   | -`tests/product.spec.cjs`<br>-`tests/search.spec.cjs`                                                                                            |
